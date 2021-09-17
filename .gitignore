@@ -1,0 +1,8 @@
+.idea/
+**/testreport
+**/coverage.cobertura.xml
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
