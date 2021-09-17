@@ -1,0 +1,60 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Build & Deployment
+
+# Controls when the workflow will run
+on: [push]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      # Setup Docker container for mongoDB
+      - name: Setup MongoDB Runner
+        run: docker-compose -f */docker-compose.yml up -d
+      
+      # Setup .NET Core 5.0.x
+      - name: Setup .NET Core SDK '5.0.x'
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: '5.0.x'
+      
+      # Setup Exclude Environment
+      - name: Prepare Exclude Environment
+        run: |
+          g++ -std=c++17 NaviAuthServiceTest/LocalTestRunner/generate_list.cpp -o gen_list
+          echo "EXCLUDE_LIST=$(./gen_list)" >> $GITHUB_ENV
+      
+      # Restore Dependency
+      - name: Install dependencies
+        run: dotnet restore
+      
+      # Build it
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      
+      # Test it!
+      - name: Test[With MSBuild configuration]
+        run: dotnet test --no-restore --verbosity normal -p:CollectCoverage=true -p:Threshold=90 -p:ExcludeByFile="${{ env.EXCLUDE_LIST }}"
+      
+      # Destroy MongoDB
+      - name: Destroy Docker-Compose MongoDB
+        run: docker-compose -f */docker-compose.yml down
+      
+      # Release to KDR CR
+      - name: Deploy to Container Registry
+        run: |
+            rm -f NaviAuthService/appsettings.json NaviAuthService/appsettings.Development.json
+            cp -vr NaviAuthService/appsettings.Container.json NaviAuthService/appsettings.json
+            docker login ${{secrets.CONTAINER_REGISTRY}} --username ${{secrets.DOCKER_USERNAME}} --password ${{secrets.DOCKER_USERPASSWORD}}
+            docker build -t navi_authentication:latest -f NaviAuthService/Dockerfile .
+            docker tag navi_authentication:latest ${{secrets.CONTAINER_REGISTRY}}/navi_authentication:latest
+            docker push ${{secrets.CONTAINER_REGISTRY}}/navi_authentication:latest
