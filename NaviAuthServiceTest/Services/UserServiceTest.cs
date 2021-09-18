@@ -1,6 +1,6 @@
 using System;
-using Naviauthentication;
-using NaviAuthenticationShared;
+using Io.Github.NaviCloud.Shared;
+using Io.Github.NaviCloud.Shared.Authentication;
 using NaviAuthService.Model;
 using NaviAuthServiceTest.TestHelper;
 using Xunit;

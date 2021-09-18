@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Io.Github.NaviCloud.Shared.Authentication;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using Naviauthentication;
 
 namespace NaviAuthService.Model
 {

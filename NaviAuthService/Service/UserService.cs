@@ -5,9 +5,9 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Grpc.Core;
+using Io.Github.NaviCloud.Shared;
+using Io.Github.NaviCloud.Shared.Authentication;
 using MongoDB.Driver;
-using Naviauthentication;
-using NaviAuthenticationShared;
 using NaviAuthService.Model;
 using NaviAuthService.Repository;
 

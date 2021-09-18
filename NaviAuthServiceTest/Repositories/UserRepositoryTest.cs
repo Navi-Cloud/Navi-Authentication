@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using AuthenticationServiceTest.TestHelper;
 using MongoDB.Driver;
-using Naviauthentication;
 using NaviAuthService.Model;
 using NaviAuthService.Repository;
 using NaviAuthServiceTest.TestHelper;
