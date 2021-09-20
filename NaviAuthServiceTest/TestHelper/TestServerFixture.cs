@@ -33,6 +33,10 @@ namespace NaviAuthServiceTest.TestHelper
                     var currentDescriptor = service.SingleOrDefault(a => a.ServiceType == typeof(IKafkaIntegration));
                     service.Remove(currentDescriptor);
                     service.AddSingleton(provider => new Mock<IKafkaIntegration>().Object);
+
+                    var storageDescriptor = service.SingleOrDefault(a => a.ServiceType == typeof(IStorageIntegration));
+                    service.Remove(storageDescriptor);
+                    service.AddSingleton(provider => new Mock<IStorageIntegration>().Object);
                 });
             });
             var client = _webApplicationFactory.CreateDefaultClient(new ResponseVersionHandler());

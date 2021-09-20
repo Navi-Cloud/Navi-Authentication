@@ -17,11 +17,13 @@ namespace NaviAuthService.Service
     {
         private readonly IUserRepository _userRepository;
         private readonly IKafkaIntegration _kafkaIntegration;
+        private readonly IStorageIntegration _storageIntegration;
 
-        public UserService(IUserRepository userRepository, IKafkaIntegration kafkaIntegration)
+        public UserService(IUserRepository userRepository, IKafkaIntegration kafkaIntegration, IStorageIntegration storageIntegration)
         {
             _userRepository = userRepository;
             _kafkaIntegration = kafkaIntegration;
+            _storageIntegration = storageIntegration;
         }
         
         /// <summary>
@@ -44,6 +46,9 @@ namespace NaviAuthService.Service
             {
                 return HandleRegisterError(superException, user);
             }
+            
+            // Notify storage service to create root folder for new user.
+            await _storageIntegration.RequestRootFolderCreation(user.UserEmail);
 
             return new Result { ResultType = ResultType.Success };
         }
