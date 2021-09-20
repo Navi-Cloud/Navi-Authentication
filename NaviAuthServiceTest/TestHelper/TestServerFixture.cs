@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,7 +8,10 @@ using Grpc.Net.Client;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using NaviAuthService;
+using NaviAuthService.Service;
 
 namespace NaviAuthServiceTest.TestHelper
 {
@@ -26,9 +30,9 @@ namespace NaviAuthServiceTest.TestHelper
                 });
                 builder.ConfigureTestServices(service =>
                 {
-                    // var currentDescriptor = service.SingleOrDefault(a => a.ServiceType == typeof(ILoggerService));
-                    // service.Remove(currentDescriptor);
-                    // service.AddSingleton(provider => new Mock<ILoggerService>().Object);
+                    var currentDescriptor = service.SingleOrDefault(a => a.ServiceType == typeof(IKafkaIntegration));
+                    service.Remove(currentDescriptor);
+                    service.AddSingleton(provider => new Mock<IKafkaIntegration>().Object);
                 });
             });
             var client = _webApplicationFactory.CreateDefaultClient(new ResponseVersionHandler());

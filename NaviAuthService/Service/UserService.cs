@@ -16,10 +16,12 @@ namespace NaviAuthService.Service
     public class UserService: Authentication.AuthenticationBase
     {
         private readonly IUserRepository _userRepository;
+        private readonly IKafkaIntegration _kafkaIntegration;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IKafkaIntegration kafkaIntegration)
         {
             _userRepository = userRepository;
+            _kafkaIntegration = kafkaIntegration;
         }
         
         /// <summary>
@@ -120,6 +122,9 @@ namespace NaviAuthService.Service
             // Email is verified by now
             // Remove User-Related thingy from user-db.
             await _userRepository.RemoveUserByEmailId(request.UserEmail);
+            
+            // Send User Removal request on Storage Service.[Queue]
+            await _kafkaIntegration.SendRemovalRequest(request.UserEmail);
 
             return new Result
             {

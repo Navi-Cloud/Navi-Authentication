@@ -21,6 +21,7 @@ namespace NaviAuthService
             services.AddGrpc();
             services.AddSingleton<MongoContext>();
             services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddSingleton<IKafkaIntegration, KafkaIntegration>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
