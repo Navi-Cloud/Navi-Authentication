@@ -8,12 +8,19 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="MongoDB.Driver" Version="2.15.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers" />
+        <InternalsVisibleTo Include="NaviAuthIntegrationTest" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Definition\NaviAuthDefinition.yaml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

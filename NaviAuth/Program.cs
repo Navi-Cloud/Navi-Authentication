@@ -1,5 +1,6 @@
 using NaviAuth.Configuration;
 using NaviAuth.Repository;
+using NaviAuth.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,10 @@ builder.Services.AddSingleton(mongoConfiguration);
 
 // Add Data Logic(Singleton)
 builder.Services.AddSingleton<MongoContext>();
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
+
+// Add Service Logic(Scoped)
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
@@ -23,7 +28,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(a => a.SwaggerEndpoint("/swagger/custom", "Navi Auth Service"));
 }
 
 app.UseHttpsRedirection();

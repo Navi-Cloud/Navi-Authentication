@@ -1,0 +1,68 @@
+openapi: 3.0.3
+info:
+  title: Navi-Cloud Authentication Microservice Internal Definition
+  description: Internal Microservice Definition(Possibly Differ from Public API!)
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:7288'
+tags:
+  - name: User
+    description: User Related Category(Join/Login/Dropout)
+paths:
+  /api/user/register:
+    post:
+      tags:
+        - User
+      summary: Join to Navi Server!
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        200:
+          description: When register succeed!
+        400:
+          description: When one of required field is not valid!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                KDRExample:
+                  value:
+                    statusCode: 400
+                    message: One of field is invalid or missing!
+                    detailedMessage: Requested email is not valid email address!
+        409:
+          description: When user with same userEmail exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                KDRExample:
+                  value:
+                    statusCode: 409
+                    message: Conflict occurred!
+                    detailedMessage: Email Address 'test@test.com' already exists!
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+        message:
+          type: string
+        detailedMessage:
+          type: string
+    RegisterRequest:
+      type: object
+      properties:
+        userEmail:
+          type: string
+          format: email
+        userPassword:
+          type: string
+          format: password

@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaviAuth", "NaviAuth\NaviAuth.csproj", "{192F352B-3C59-4382-ABAA-CE2B0448EE8A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaviAuthUnitTest", "NaviAuthUnitTest\NaviAuthUnitTest.csproj", "{5F073FE1-F4E0-4A24-B44F-F4A03A9A60A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaviAuthIntegrationTest", "NaviAuthIntegrationTest\NaviAuthIntegrationTest.csproj", "{94B13472-C7ED-4E9A-873E-755BE1B29B6E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{192F352B-3C59-4382-ABAA-CE2B0448EE8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{192F352B-3C59-4382-ABAA-CE2B0448EE8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{192F352B-3C59-4382-ABAA-CE2B0448EE8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F073FE1-F4E0-4A24-B44F-F4A03A9A60A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F073FE1-F4E0-4A24-B44F-F4A03A9A60A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F073FE1-F4E0-4A24-B44F-F4A03A9A60A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F073FE1-F4E0-4A24-B44F-F4A03A9A60A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94B13472-C7ED-4E9A-873E-755BE1B29B6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94B13472-C7ED-4E9A-873E-755BE1B29B6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94B13472-C7ED-4E9A-873E-755BE1B29B6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94B13472-C7ED-4E9A-873E-755BE1B29B6E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
