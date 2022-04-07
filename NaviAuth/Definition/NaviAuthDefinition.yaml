@@ -4,9 +4,9 @@ info:
   description: Navi-Cloud Authentication Microservice Definition
   version: 1.0.0
 servers:
-  - url: 'http://localhost:8080'
+  - url: "http://localhost:8080"
     description: Server by Nginx Gateway(Server started by docker-compose)
-  - url: 'https://localhost:7288'
+  - url: "https://localhost:7288"
     description: Navi-Auth Local Individual Server.
 tags:
   - name: User
@@ -21,7 +21,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterRequest'
+              $ref: "#/components/schemas/RegisterRequest"
       responses:
         200:
           description: When register succeed!
@@ -30,7 +30,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 KDRExample:
                   value:
@@ -42,13 +42,42 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 KDRExample:
                   value:
                     statusCode: 409
                     message: Conflict occurred!
                     detailedMessage: Email Address 'test@test.com' already exists!
+  /api/user/login:
+    post:
+      tags:
+        - User
+      summary: Login to Navi Server!
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        200:
+          description: When Login succeed!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        401:
+          description: When Login failed because of invalid credential
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                LoginFailureExample:
+                  value:
+                    statusCode: 401
+                    message: Login Failed!
+                    detailedMessage: Either email or password is wrong!
 components:
   schemas:
     ErrorResponse:
@@ -60,6 +89,20 @@ components:
           type: string
         detailedMessage:
           type: string
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+    LoginRequest:
+      type: object
+      properties:
+        userEmail:
+          type: string
+          format: email
+        userPassword:
+          type: string
+          format: password
     RegisterRequest:
       type: object
       properties:

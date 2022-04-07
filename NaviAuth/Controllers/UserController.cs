@@ -13,10 +13,12 @@ namespace NaviAuth.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IAccessTokenService _accessTokenService;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, IAccessTokenService accessTokenService)
     {
         _userService = userService;
+        _accessTokenService = accessTokenService;
     }
 
     [HttpPost("register")]
@@ -35,5 +37,29 @@ public class UserController : ControllerBase
             }),
             _ => new StatusCodeResult(StatusCodes.Status500InternalServerError)
         };
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> LoginUserAsync(LoginRequest loginRequest)
+    {
+        var credentialValidation = await _userService.ValidateCredential(loginRequest);
+        if (credentialValidation.ResultType != ResultType.Success)
+        {
+            return Unauthorized(new ErrorResponse
+            {
+                StatusCode = StatusCodes.Status401Unauthorized,
+                Message = "Login Failed!",
+                DetailedMessage = credentialValidation.Message
+            });
+        }
+        
+        // Make sure user exists.
+        var user = credentialValidation.TargetObject ??
+                   throw new NullReferenceException("Validating credential succeed but TargetObject was null.");
+
+        // Token
+        var token = (await _accessTokenService.FindPreviousTokenAsync(user.Id))
+                    ?? (await _accessTokenService.CreateTokenAsync(user.Id));
+        return Ok(token);
     }
 }

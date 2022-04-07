@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Moq;
 using NaviAuth.Model.Data;
@@ -64,5 +65,84 @@ public class UserServiceTest
         // Check
         Assert.NotNull(result);
         Assert.Equal(ResultType.Success, result.ResultType);
+    }
+
+    [Fact(DisplayName =
+        "ValidateCredential: ValidateCredential should return DataNotFound result when email/id is not found")]
+    public async Task Is_ValidateCredential_Returns_DataNotFound_When_Entity_Does_Not_Exists()
+    {
+        // Let
+        var loginRequest = new LoginRequest
+        {
+            UserEmail = "test@adsfasdfadsf.com",
+            UserPassword = "hello"
+        };
+        _mockUserRepository.Setup(a => a.GetUserByEmailOrDefaultAsync(loginRequest.UserEmail))
+            .ReturnsAsync(value: null);
+
+        // Do
+        var communicationResult = await UserService.ValidateCredential(loginRequest);
+
+        // Verify
+        _mockUserRepository.VerifyAll();
+
+        // Check
+        Assert.Equal(ResultType.DataNotFound, communicationResult.ResultType);
+    }
+
+    [Fact(DisplayName =
+        "ValidateCredential: ValidateCredential should return DataNotFound result when Password does not match.")]
+    public async Task Is_ValidateCredential_Returns_DataNotFound_When_Password_Wrong()
+    {
+        // Let
+        var loginRequest = new LoginRequest
+        {
+            UserEmail = "test@adsfasdfadsf.com",
+            UserPassword = "hello"
+        };
+        _mockUserRepository.Setup(a => a.GetUserByEmailOrDefaultAsync(loginRequest.UserEmail))
+            .ReturnsAsync(new User
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserEmail = loginRequest.UserEmail,
+                UserPassword = BCrypt.Net.BCrypt.HashPassword("wrong")
+            });
+
+        // Do
+        var communicationResult = await UserService.ValidateCredential(loginRequest);
+
+        // Verify
+        _mockUserRepository.VerifyAll();
+
+        // Check
+        Assert.Equal(ResultType.DataNotFound, communicationResult.ResultType);
+    }
+
+    [Fact(DisplayName = "ValidateCredential: ValidateCredential should return Success result when login succeed.")]
+    public async Task Is_ValidateCredential_Returns_Success_When_Login_Success()
+    {
+        // Let
+        var loginRequest = new LoginRequest
+        {
+            UserEmail = "test@sadffddsf.com",
+            UserPassword = "testhello"
+        };
+        _mockUserRepository.Setup(a => a.GetUserByEmailOrDefaultAsync(loginRequest.UserEmail))
+            .ReturnsAsync(new User
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserEmail = loginRequest.UserEmail,
+                UserPassword = BCrypt.Net.BCrypt.HashPassword(loginRequest.UserPassword)
+            });
+
+        // Do
+        var communicationResult = await UserService.ValidateCredential(loginRequest);
+
+        // Verify
+        _mockUserRepository.VerifyAll();
+
+        // Check
+        Assert.Equal(ResultType.Success, communicationResult.ResultType);
+        Assert.NotNull(communicationResult.TargetObject);
     }
 }
