@@ -1,10 +1,13 @@
 openapi: 3.0.3
 info:
-  title: Navi-Cloud Authentication Microservice Internal Definition
-  description: Internal Microservice Definition(Possibly Differ from Public API!)
+  title: Navi-Cloud Authentication Microservice
+  description: Navi-Cloud Authentication Microservice Definition
   version: 1.0.0
 servers:
+  - url: 'http://localhost:8080'
+    description: Server by Nginx Gateway(Server started by docker-compose)
   - url: 'https://localhost:7288'
+    description: Navi-Auth Local Individual Server.
 tags:
   - name: User
     description: User Related Category(Join/Login/Dropout)
