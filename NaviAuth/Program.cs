@@ -18,9 +18,11 @@ builder.Services.AddSingleton(mongoConfiguration);
 // Add Data Logic(Singleton)
 builder.Services.AddSingleton<MongoContext>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<IAccessTokenRepository, AccessTokenRepository>();
 
 // Add Service Logic(Scoped)
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAccessTokenService, AccessTokenService>();
 
 var app = builder.Build();
 

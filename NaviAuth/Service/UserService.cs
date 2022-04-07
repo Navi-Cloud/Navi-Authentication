@@ -8,6 +8,7 @@ namespace NaviAuth.Service;
 public interface IUserService
 {
     Task<InternalCommunication<object>> CreateUserAsync(RegisterRequest registerRequest);
+    Task<InternalCommunication<User>> ValidateCredential(LoginRequest loginRequest);
 }
 
 public class UserService : IUserService
@@ -34,5 +35,47 @@ public class UserService : IUserService
         await _userRepository.InsertUserAsync(registerRequest.ToUserAccount());
 
         return InternalCommunication<object>.Success(default);
+    }
+    
+    public async Task<InternalCommunication<User>> ValidateCredential(LoginRequest loginRequest)
+    {
+        var user = await _userRepository.GetUserByEmailOrDefaultAsync(loginRequest.UserEmail);
+        if (user == null)
+        {
+            return new InternalCommunication<User>
+            {
+                ResultType = ResultType.DataNotFound,
+                Message = "Login failed! Please check email or id."
+            };
+        }
+
+        if (!CheckPasswordCorrect(loginRequest.UserPassword, user.UserPassword))
+        {
+            return new InternalCommunication<User>
+            {
+                ResultType = ResultType.DataNotFound,
+                Message = "Login failed! Please check email or id."
+            };
+        }
+
+        return new InternalCommunication<User>
+        {
+            ResultType = ResultType.Success,
+            TargetObject = user
+        };
+    }
+    
+    private bool CheckPasswordCorrect(string plainPassword, string hashedPassword)
+    {
+        bool correct = false;
+        try
+        {
+            correct = BCrypt.Net.BCrypt.Verify(plainPassword, hashedPassword);
+        }
+        catch
+        {
+        }
+
+        return correct;
     }
 }
