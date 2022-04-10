@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using NaviAuth.Model.Data;
 using NaviAuth.Model.Internal;
 using NaviAuth.Model.Request;
@@ -36,7 +37,7 @@ public class UserService : IUserService
 
         return InternalCommunication<object>.Success(default);
     }
-    
+
     public async Task<InternalCommunication<User>> ValidateCredential(LoginRequest loginRequest)
     {
         var user = await _userRepository.GetUserByEmailOrDefaultAsync(loginRequest.UserEmail);
@@ -64,7 +65,8 @@ public class UserService : IUserService
             TargetObject = user
         };
     }
-    
+
+    [ExcludeFromCodeCoverage]
     private bool CheckPasswordCorrect(string plainPassword, string hashedPassword)
     {
         bool correct = false;

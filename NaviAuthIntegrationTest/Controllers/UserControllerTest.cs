@@ -30,6 +30,29 @@ public class UserControllerTest
         _httpClient = _applicationFactory.CreateClient();
     }
 
+    public async Task<LoginRequest> RegisterSampleUser()
+    {
+        // Let
+        var registerRequest = new RegisterRequest
+        {
+            UserEmail = "kangdroid@testwhatever.com",
+            UserPassword = "helloworld"
+        };
+
+        // Do
+        var response = await _httpClient.PostAsJsonAsync("/api/user/register", registerRequest);
+
+        // Check
+        Assert.NotNull(response);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        return new LoginRequest
+        {
+            UserEmail = registerRequest.UserEmail,
+            UserPassword = registerRequest.UserPassword
+        };
+    }
+
     [Fact(DisplayName = "POST /api/user/register should return 200 Ok when normal user registered.")]
     public async Task Is_RegisterUser_Returns_200_Ok_When_Registered_Successfully()
     {
@@ -65,5 +88,37 @@ public class UserControllerTest
         // Check
         Assert.NotNull(response);
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+    }
+
+    [Fact(DisplayName = "POST /api/user/login should return 401 when login fails")]
+    public async Task Is_LoginUser_Returns_401_When_Login_Fails()
+    {
+        // Let
+        var loginRequest = new LoginRequest
+        {
+            UserEmail = "adsfadsfasdf@asfddasfadsf.com",
+            UserPassword = "testasdf"
+        };
+
+        // Do
+        var response = await _httpClient.PostAsJsonAsync("/api/user/login", loginRequest);
+
+        // Check
+        Assert.NotNull(response);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact(DisplayName = "POST /api/user/login should return 200 OK with access token")]
+    public async Task Is_LoginUser_Returns_200_When_Login_Succeed()
+    {
+        // Let
+        var loginRequest = await RegisterSampleUser();
+        
+        // Do
+        var response = await _httpClient.PostAsJsonAsync("/api/user/login", loginRequest);
+        
+        // Check
+        Assert.NotNull(response);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 }
