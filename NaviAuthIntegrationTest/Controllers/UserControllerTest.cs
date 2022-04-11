@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using NaviAuth.Configuration;
 using NaviAuth.Model.Request;
+using NaviAuth.Model.Response;
 using NaviAuthIntegrationTest.Helper;
 using Xunit;
 
@@ -51,6 +53,20 @@ public class UserControllerTest
             UserEmail = registerRequest.UserEmail,
             UserPassword = registerRequest.UserPassword
         };
+    }
+
+    private async Task<LoginResponse> RegisterAndLoginAsync()
+    {
+        var loginRequest = await RegisterSampleUser();
+        
+        // Do
+        var response = await _httpClient.PostAsJsonAsync("/api/user/login", loginRequest);
+        
+        // Check
+        Assert.True(response.IsSuccessStatusCode);
+        
+        // Deserialize
+        return await response.Content.ReadFromJsonAsync<LoginResponse>();
     }
 
     [Fact(DisplayName = "POST /api/user/register should return 200 Ok when normal user registered.")]
@@ -119,6 +135,33 @@ public class UserControllerTest
         
         // Check
         Assert.NotNull(response);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact(DisplayName = "GET /api/user should return 401 unauthorized when access token is not declared.")]
+    public async Task Is_GetUserAsync_Returns_Unauthorized_When_AccessToken_Is_Empty()
+    {
+        // do
+        var response = await _httpClient.GetAsync("/api/user");
+        
+        // Check
+        Assert.False(response.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact(DisplayName = "GET /api/user should return 200 OK when everything looks normal.")]
+    public async Task Is_GetUserAsync_Works_Well()
+    {
+        // Let
+        var loginResponse = await RegisterAndLoginAsync();
+        
+        // Do
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginResponse.Token);
+        var response = await _httpClient.GetAsync("/api/user");
+        _httpClient.DefaultRequestHeaders.Clear();
+        
+        // Check
+        Assert.True(response.IsSuccessStatusCode);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 }

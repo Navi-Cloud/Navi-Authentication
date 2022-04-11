@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
+using NaviAuth.Attribute;
+using NaviAuth.Extension;
 using NaviAuth.Model.Internal;
 using NaviAuth.Model.Request;
 using NaviAuth.Model.Response;
@@ -52,7 +54,7 @@ public class UserController : ControllerBase
                 DetailedMessage = credentialValidation.Message
             });
         }
-        
+
         // Make sure user exists.
         var user = credentialValidation.TargetObject ??
                    throw new NullReferenceException("Validating credential succeed but TargetObject was null.");
@@ -61,5 +63,13 @@ public class UserController : ControllerBase
         var token = (await _accessTokenService.FindPreviousTokenAsync(user.Id))
                     ?? (await _accessTokenService.CreateTokenAsync(user.Id));
         return Ok(token);
+    }
+
+    [HttpGet]
+    [NaviAuthorization]
+    public async Task<IActionResult> GetUserAsync()
+    {
+        var userId = HttpContext.GetUserId();
+        return Ok(await _userService.GetUserProjectionAsync(userId));
     }
 }

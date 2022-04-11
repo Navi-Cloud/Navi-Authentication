@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using NaviAuth.Model.Data;
 using NaviAuth.Model.Internal;
 using NaviAuth.Model.Request;
+using NaviAuth.Model.Response;
 using NaviAuth.Repository;
 
 namespace NaviAuth.Service;
@@ -10,6 +11,7 @@ public interface IUserService
 {
     Task<InternalCommunication<object>> CreateUserAsync(RegisterRequest registerRequest);
     Task<InternalCommunication<User>> ValidateCredential(LoginRequest loginRequest);
+    Task<UserProjection?> GetUserProjectionAsync(string userId);
 }
 
 public class UserService : IUserService
@@ -64,6 +66,11 @@ public class UserService : IUserService
             ResultType = ResultType.Success,
             TargetObject = user
         };
+    }
+
+    public async Task<UserProjection?> GetUserProjectionAsync(string userId)
+    {
+        return (await _userRepository.GetUserByIdAsync(userId)).ToUserProjection();
     }
 
     [ExcludeFromCodeCoverage]

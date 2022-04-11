@@ -78,8 +78,28 @@ paths:
                     statusCode: 401
                     message: Login Failed!
                     detailedMessage: Either email or password is wrong!
+  /api/user:
+    get:
+      tags:
+        - User
+      summary: Get Account Information based on requested token.
+      responses:
+        200:
+          description: When successfully authenticated and got user's information.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProjection"
 components:
   schemas:
+    UserProjection:
+      type: object
+      properties:
+        userId:
+          type: string
+        userEmail:
+          type: string
+          format: email
     ErrorResponse:
       type: object
       properties:

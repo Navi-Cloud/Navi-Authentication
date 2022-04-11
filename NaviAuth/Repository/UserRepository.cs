@@ -8,6 +8,7 @@ public interface IUserRepository
 {
     Task InsertUserAsync(User user);
     Task<User?> GetUserByEmailOrDefaultAsync(string email);
+    Task<User> GetUserByIdAsync(string id);
 }
 
 public class UserRepository : IUserRepository
@@ -28,5 +29,10 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetUserByEmailOrDefaultAsync(string email)
     {
         return await UserQueryable.FirstOrDefaultAsync(a => a.UserEmail == email);
+    }
+
+    public async Task<User> GetUserByIdAsync(string id)
+    {
+        return await UserQueryable.FirstOrDefaultAsync(a => a.Id == id);
     }
 }

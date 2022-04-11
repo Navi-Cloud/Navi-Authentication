@@ -145,4 +145,29 @@ public class UserServiceTest
         Assert.Equal(ResultType.Success, communicationResult.ResultType);
         Assert.NotNull(communicationResult.TargetObject);
     }
+
+    [Fact(DisplayName = "GetUserProjectionAsync: GetUserProjectionAsync should return user-projection entity.")]
+    public async Task Is_GetUserProjectionAsync_Returns_UserProjection_Well()
+    {
+        // Let
+        var user = new User
+        {
+            Id = "test",
+            UserEmail = "test",
+            UserPassword = "test"
+        };
+        _mockUserRepository.Setup(a => a.GetUserByIdAsync(user.Id))
+            .ReturnsAsync(value: user);
+
+        // Do
+        var result = await UserService.GetUserProjectionAsync(user.Id);
+
+        // Verify
+        _mockUserRepository.VerifyAll();
+
+        // Check
+        Assert.NotNull(result);
+        Assert.Equal(user.Id, result.UserId);
+        Assert.Equal(user.UserEmail, result.UserEmail);
+    }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using NaviAuth.Model.Data;
 using NaviAuth.Repository;
@@ -27,10 +28,10 @@ public class AccessTokenRepositoryTest
     {
         // Let(N/A)
         var userId = "testUserId";
-        
+
         // Do
         var result = await _accessTokenRepository.FindAccessTokenByUserId(userId);
-        
+
         // Check
         Assert.Null(result);
     }
@@ -47,10 +48,10 @@ public class AccessTokenRepositoryTest
             Id = "testId"
         };
         await _testCollection.InsertOneAsync(accessToken);
-        
+
         // Do
         var result = await _accessTokenRepository.FindAccessTokenByUserId(accessToken.UserId);
-        
+
         // Check
         Assert.NotNull(result);
         Assert.Equal(accessToken.UserId, result.UserId);
@@ -68,14 +69,50 @@ public class AccessTokenRepositoryTest
             CreatedAt = DateTimeOffset.UtcNow,
             Id = "testId"
         };
-        
+
         // Do
         await _accessTokenRepository.InsertAccessTokenAsync(accessToken);
-        
+
         // Check
         var list = await _testCollection.AsQueryable().ToListAsync();
         Assert.Single(list);
         Assert.Equal(accessToken.UserId, list.First().UserId);
         Assert.Equal(accessToken.Id, list.First().Id);
+    }
+
+    [Fact(DisplayName =
+        "FindAccessTokenByTokenAsync: FindAccessTokenByTokenAsync should return null if there is no corresponding data.")]
+    public async Task Is_FindAccessTokenByTokenAsync_Returns_Null_If_No_Data()
+    {
+        // Let
+        var token = "randomId";
+
+        // Do
+        var result = await _accessTokenRepository.FindAccessTokenByTokenAsync(token);
+
+        // Check
+        Assert.Null(result);
+    }
+
+    [Fact(DisplayName =
+        "FindAccessTokenByTokenAsync: FindAccessTokenByTokenAsync should return corresponding data if data exists.")]
+    public async Task Is_FindAccessTokenByTokenAsync_Returns_Corresponding_Data_If_Data_Exists()
+    {
+        // Let
+        var accessToken = new AccessToken
+        {
+            Id = ObjectId.Empty.ToString(),
+            CreatedAt = DateTimeOffset.Now,
+            UserId = "testUserId"
+        };
+        await _testCollection.InsertOneAsync(accessToken);
+
+        // Do
+        var result = await _accessTokenRepository.FindAccessTokenByTokenAsync(accessToken.Id);
+
+        // Check
+        Assert.NotNull(result);
+        Assert.Equal(accessToken.Id, result.Id);
+        Assert.Equal(accessToken.UserId, result.UserId);
     }
 }

@@ -8,6 +8,7 @@ public interface IAccessTokenRepository
 {
     Task<AccessToken?> FindAccessTokenByUserId(string userId);
     Task InsertAccessTokenAsync(AccessToken accessToken);
+    Task<AccessToken?> FindAccessTokenByTokenAsync(string token);
 }
 
 public class AccessTokenRepository : IAccessTokenRepository
@@ -24,6 +25,12 @@ public class AccessTokenRepository : IAccessTokenRepository
     {
         return await AccessTokenQueryable.Where(a => a.UserId == userId)
             .OrderBy(a => a.CreatedAt)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<AccessToken?> FindAccessTokenByTokenAsync(string token)
+    {
+        return await AccessTokenQueryable.Where(a => a.Id == token)
             .FirstOrDefaultAsync();
     }
 

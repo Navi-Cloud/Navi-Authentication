@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using NaviAuth.Model.Data;
 using NaviAuth.Repository;
@@ -73,5 +74,40 @@ public class UserRepositoryTest
         Assert.NotNull(result);
         Assert.Equal(user.UserEmail, result.UserEmail);
         Assert.Equal(user.UserPassword, result.UserPassword);
+    }
+
+    [Fact(DisplayName = "GetUserByIdAsync: GetUserByIdAsync should return corresponding data if exists.")]
+    public async Task Is_GetUserByIdAsync_Returns_Data_If_Exists()
+    {
+        // Let
+        var user = new User
+        {
+            Id = ObjectId.Empty.ToString(),
+            UserEmail = "testEmail",
+            UserPassword = "test"
+        };
+        await _testCollection.InsertOneAsync(user);
+
+        // Do
+        var result = await _userRepository.GetUserByIdAsync(user.Id);
+
+        // Check
+        Assert.NotNull(result);
+        Assert.Equal(user.Id, result.Id);
+        Assert.Equal(user.UserEmail, result.UserEmail);
+        Assert.Equal(user.UserPassword, result.UserPassword);
+    }
+
+    [Fact(DisplayName = "GetUserByIdAsync: GetUserByIdAsync should return null if data does not exists.")]
+    public async Task Is_GetUserByIdAsync_Returns_Null_When_Data_Null()
+    {
+        // Let
+        var userId = ObjectId.Empty.ToString();
+
+        // Do
+        var result = await _userRepository.GetUserByIdAsync(userId);
+
+        // Check
+        Assert.Null(result);
     }
 }
