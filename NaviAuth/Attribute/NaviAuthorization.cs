@@ -30,6 +30,19 @@ public class NaviAuthorization : ActionFilterAttribute
         }
 
         var accessTokenObject = accessTokenRepository.FindAccessTokenByTokenAsync(accessToken).GetAwaiter().GetResult();
+
+        if (accessTokenObject == null)
+        {
+            context.Result = new UnauthorizedObjectResult(new ErrorResponse
+            {
+                StatusCode = StatusCodes.Status401Unauthorized,
+                Message = "Unauthorized!",
+                DetailedMessage = "This API needs authorization but authorization failed!"
+            });
+
+            return;
+        }
+
         httpContext.SetUserId(accessTokenObject.UserId);
         base.OnActionExecuting(context);
     }
